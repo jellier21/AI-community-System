@@ -1,0 +1,160 @@
+{
+	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
+		{
+			"path": "pages/index/index",
+			"style": {
+				"navigationBarTitleText": "智慧社区 AI 服务平台"
+			}
+		},
+		{
+			"path": "pages/home/home",
+			"style": {
+				"navigationStyle": "custom",
+				"enablePullDownRefresh": true
+			}
+		},
+		{
+			"path": "component/MyTools/MyTools",
+			"style": {
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "component/SetWeb/SetWeb",
+			"style": {
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "component/ChatWeb/ChatWeb",
+			"style": {
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "component/AI_page/mondo/mondo",
+			"style": {
+				"navigationBarTitleText": "知识问答"
+			}
+		},
+		{
+			"path": "component/AI_page/medical/medical",
+			"style": {
+				"navigationBarTitleText": "智能社医"
+			}
+		},
+		{
+			"path": "component/chatPage/chat/chat",
+			"style": {
+				"navigationBarTitleText": ""
+			}
+		},
+		{
+			"path": "component/settingPage/myPage/myPage",
+			"style": {
+				"navigationBarTitleText": ""
+			}
+		},
+		{
+			"path": "component/settingPage/create_community/create_community",
+			"style": {
+				"navigationBarTitleText": "创建社区"
+			}
+		},
+		{
+			"path": "component/ToolsPage/LeaderTools/member_manage/member_manage",
+			"style": {
+				"navigationBarTitleText": "成员管理"
+			}
+		},
+		{
+			"path": "component/ToolsPage/LeaderTools/newNotice/newNotice",
+			"style": {
+				"navigationBarTitleText": "公告管理"
+			}
+		},
+		{
+			"path": "component/ToolsPage/LeaderTools/advance_statistics/advance_statistics",
+			"style": {
+				"navigationBarTitleText": "建议统计"
+			}
+		},
+		{
+			"path": "component/ToolsPage/user/advance-submit/advance-submit",
+			"style": {
+				"navigationBarTitleText": "建议上报"
+			}
+		},
+		{
+			"path": "component/ToolsPage/LeaderTools/share_manager/share_manager",
+			"style": {
+				"navigationBarTitleText": "社区圈管理"
+			}
+		},
+		{
+			"path": "component/ToolsPage/user/share/share",
+			"style": {
+				"navigationBarTitleText": "社区圈"
+			}
+		},
+		{
+			"path": "component/chatPage/person/person",
+			"style": {
+				"navigationBarTitleText": ""
+			}
+		},
+		{
+			"path": "component/chatPage/friend_list/friend_list",
+			"style": {
+				"navigationBarTitleText": "好友管理"
+			}
+		},
+		{
+			"path": "component/chatPage/create_group/create_group",
+			"style": {
+				"navigationBarTitleText": "建立群聊"
+			}
+		},
+		{
+			"path": "component/ToolsPage/user/MapReading/MapReading",
+			"style": {
+				"navigationBarTitleText": ""
+			}
+		},
+		{
+			"path": "component/ToolsPage/LeaderTools/FinalReport/FinalReport",
+			"style": {
+				"navigationBarTitleText": ""
+			}
+		}
+	],
+	"globalStyle": {
+		"navigationBarTextStyle": "black",
+		"navigationBarTitleText": "uni-app",
+		"navigationBarBackgroundColor": "#F8F8F8",
+		"backgroundColor": "#F8F8F8"
+	},
+	"tabBar": {
+		"backgroundColor": "white",
+		"color": "#2C405A",
+		"list": [
+			{
+				"text": "home",
+				"pagePath": "pages/home/home"
+			},
+			{
+				"text": "服务工具",
+				"pagePath": "component/MyTools/MyTools"
+			},
+			{
+				"text": "消息",
+				"pagePath": "component/ChatWeb/ChatWeb"
+			},
+			{
+				"text": "设置",
+				"pagePath": "component/SetWeb/SetWeb"
+			}
+		]
+	},
+	"uniIdRouter": {}
+}

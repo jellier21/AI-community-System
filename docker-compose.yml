@@ -1,0 +1,32 @@
+services:
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456
+      MYSQL_DATABASE: community
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./db:/docker-entrypoint-initdb.d
+
+  go-server:
+    build: ./backend/Service
+    environment:
+      DB_HOST: mysql
+      SERVER_PORT: 8080
+      CLIENT_URL: http://python-ai:8001
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mysql
+
+  python-ai:
+    build: ./backend/AIend/integration
+    environment:
+      # 容器内 127.0.0.1 是容器自己，必须用服务名访问 Go；手动运行时 .env 里的 127.0.0.1:8080 才有效
+      - GIN_BASEURL=http://go-server:8080
+    ports:
+      - "8001:8001"
+    depends_on:
+      - mysql
+      - go-server
