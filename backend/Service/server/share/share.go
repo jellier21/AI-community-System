@@ -53,6 +53,16 @@ func HandleShare(r *gin.Engine, db *sql.DB) {
 		c.JSON(http.StatusOK, gin.H{"info": list})
 	})
 
+	// 全站最新动态（首页"为您推荐"用）
+	g.GET("/latest", JWT.AuthMiddleware(), func(c *gin.Context) {
+		list, err := sqlTools.GetLatestShares(3, db)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{"info": list})
+	})
+
 	// 删除
 	g.POST("/delete", JWT.AuthMiddleware(), func(c *gin.Context) {
 		account := c.GetString("userID")

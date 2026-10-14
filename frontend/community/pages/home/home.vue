@@ -36,7 +36,23 @@
 
 		<view class="recommend">
 			<view class="recommend-title">为您推荐</view>
-			<view class="recommend-container">推送内容</view>
+			<view class="recommend-container" v-if="latestShares.length">
+				<view class="rec-item" v-for="item in latestShares" :key="item.id" @click="goShare">
+					<view class="rec-head">
+						<image class="rec-avatar" :src="item.avatar || '/static/logo.png'" mode="aspectFill"></image>
+						<view class="rec-head-info">
+							<text class="rec-author">{{ item.name }}</text>
+							<text class="rec-time">{{ item.create_at }}</text>
+						</view>
+					</view>
+					<view class="rec-content">{{ item.content }}</view>
+					<image v-if="firstImage(item.images)" class="rec-thumb" :src="firstImage(item.images)" mode="aspectFill"></image>
+				</view>
+				<view class="rec-more" @click="goShare">查看全部动态 ></view>
+			</view>
+			<view class="recommend-container rec-empty" v-else>
+				暂无动态，快去社区圈发布第一条吧
+			</view>
 		</view>
 	</view>
 </template>
@@ -65,6 +81,7 @@ const currentHour = ref()
 //=====================公告=========================
 import { GetLatestNotice } from '@/util/tools/notice'
 import { GetCommunityUid } from '@/util/tools/member'
+import { GetLatestShares } from '@/util/tools/share'
 
 const latestNotice = ref({})
 
@@ -81,6 +98,26 @@ const goNoticeList = () => {
 	// 有需要再跳转到公告列表页，暂时只展示
 }
 
+//=====================推荐动态=========================
+const latestShares = ref([])
+
+const firstImage = (images) => {
+	if (!images) return ''
+	return images.split(',')[0]
+}
+
+const loadLatestShares = async () => {
+	try {
+		latestShares.value = await GetLatestShares()
+	} catch (e) {
+		console.log('加载推荐动态失败:', e)
+	}
+}
+
+const goShare = () => {
+	uni.navigateTo({ url: '/component/ToolsPage/user/share/share' })
+}
+
 
 
 onMounted(() => {
@@ -90,6 +127,7 @@ onMounted(() => {
 		GreetTime()
 	}, 1000)
 	loadLatestNotice()
+	loadLatestShares()
 })
 
 
@@ -267,11 +305,84 @@ page {
 	.recommend-container {
 		background: #ffffff;
 		border-radius: 24rpx;
-		min-height: 240rpx;
-		padding: 28rpx;
-		font-size: 28rpx;
-		color: #86909c;
+		padding: 24rpx;
 		box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.04);
+	}
+
+	.rec-empty {
+		min-height: 200rpx;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		font-size: 26rpx;
+		color: #c9cdd4;
+	}
+
+	.rec-item {
+		padding: 20rpx 0;
+		&:not(:last-child) {
+			border-bottom: 1rpx solid #f2f3f5;
+		}
+	}
+
+	.rec-head {
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		margin-bottom: 12rpx;
+	}
+
+	.rec-avatar {
+		width: 56rpx;
+		height: 56rpx;
+		border-radius: 50%;
+		margin-right: 16rpx;
+		background: #f0f0f0;
+		flex-shrink: 0;
+	}
+
+	.rec-head-info {
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+		overflow: hidden;
+	}
+
+	.rec-author {
+		font-size: 26rpx;
+		font-weight: 600;
+		color: #1d2129;
+	}
+
+	.rec-time {
+		font-size: 22rpx;
+		color: #a9aeb8;
+		margin-top: 4rpx;
+	}
+
+	.rec-content {
+		font-size: 27rpx;
+		line-height: 1.55;
+		color: #4e5969;
+		display: -webkit-box;
+		-webkit-line-clamp: 2;
+		-webkit-box-orient: vertical;
+		overflow: hidden;
+	}
+
+	.rec-thumb {
+		width: 100%;
+		height: 240rpx;
+		border-radius: 16rpx;
+		margin-top: 16rpx;
+		background: #f2f3f5;
+	}
+
+	.rec-more {
+		padding-top: 20rpx;
+		text-align: center;
+		font-size: 26rpx;
+		color: #4a7dff;
 	}
 }
 </style>

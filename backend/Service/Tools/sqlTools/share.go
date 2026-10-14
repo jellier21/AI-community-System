@@ -51,6 +51,17 @@ func GetCommunityShares(communityUid string, db *sql.DB) ([]Share, error) {
 	return scanShares(rows)
 }
 
+// 查全站最新动态（首页推荐位用，不限制社区）
+func GetLatestShares(limit int, db *sql.DB) ([]Share, error) {
+	sqlStr := "SELECT s.id, s.account, s.community_uid, s.content, s.images, s.create_at, s.update_at, IFNULL(u.nick, s.account), IFNULL(u.avatar, '') FROM share s LEFT JOIN user u ON s.account = u.account ORDER BY s.id DESC LIMIT ?"
+	rows, err := db.Query(sqlStr, limit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	return scanShares(rows)
+}
+
 // 删除动态（校验：本人 或 是该社区 leader）
 func DeleteShare(shareId int, account string, db *sql.DB) error {
 	// 先查这条动态

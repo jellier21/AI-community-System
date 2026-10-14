@@ -142,7 +142,7 @@ const confirmAddMember = async ()=>{
 		showAddDialog.value = false
 		await GetMemberList(community_Number.value)
 	}catch(e){
-		uni.showToast({ title: '添加失败', icon: 'none' })
+		uni.showToast({ title: '添加失败，对方可能还为注册小程序账号', icon: 'none' })
 	}
 }
 

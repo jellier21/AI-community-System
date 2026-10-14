@@ -18,6 +18,11 @@ const GetCommunityShares = async (community_uid)=>{
 	return res.info || []
 }
 
+const GetLatestShares = async ()=>{
+	const res = await request({ url: '/api/share/latest' })
+	return res.info || []
+}
+
 const DeleteShare = async (id)=>{
 	return await request({
 		url: '/api/share/delete',
@@ -99,7 +104,7 @@ const chooseAndUploadImages = async (count=9)=>{
 }
 
 export {
-	PublishShare, GetMyShares, GetCommunityShares,
+	PublishShare, GetMyShares, GetCommunityShares, GetLatestShares,
 	DeleteShare, UpdateShare,
 	chooseAndUploadImages, uploadOneImage
 }
