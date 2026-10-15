@@ -109,8 +109,22 @@ type RoomDB struct {
 }
 
 func GetChatroomLists(account string, db *sql.DB) ([]RoomDB, error) {
-	sqlStr := "SELECT r.uid, r.name, r.leader, r.updatetime FROM `groups` g JOIN room r ON g.uid = r.uid WHERE g.account = ?"
-	rows, err := db.Query(sqlStr, account)
+	// 私聊房间的 r.name 是创建者当时看到的对方昵称，对被加方来说会显示成自己。
+	// 因此对 type='private' 的房间，按当前登录者动态取"另一个成员"的昵称作为显示名；
+	// 群聊/社区房继续用 r.name。
+	sqlStr := `SELECT r.uid,
+		CASE WHEN r.type = 'private' THEN
+			(SELECT IFNULL(u2.nick, g2.account)
+			 FROM ` + "`groups`" + ` g2
+			 LEFT JOIN user u2 ON g2.account = u2.account
+			 WHERE g2.uid = r.uid AND g2.account != ?
+			 LIMIT 1)
+		ELSE r.name END AS display_name,
+		r.leader, r.updatetime
+		FROM ` + "`groups`" + ` g
+		JOIN room r ON g.uid = r.uid
+		WHERE g.account = ?`
+	rows, err := db.Query(sqlStr, account, account)
 	if err != nil {
 		log.Println("查询房间列表失败:", err)
 		return nil, err

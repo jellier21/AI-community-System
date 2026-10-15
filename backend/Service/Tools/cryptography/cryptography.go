@@ -6,7 +6,7 @@ import (
 )
 
 // =====================密码加密保护============================
-func PasswordToHash(password string) string {
+func PasswordToHash(password string) (string, error) {
 	// 密码===哈希===>bcrypt
 	hashedPassword, err := bcrypt.GenerateFromPassword(
 		[]byte(password),
@@ -14,8 +14,9 @@ func PasswordToHash(password string) string {
 	)
 	if err != nil {
 		fmt.Println("密码哈希错误:", err)
+		return "", err
 	}
-	return string(hashedPassword)
+	return string(hashedPassword), nil
 }
 
 func HashToPasswordBool(hashString string, inputWord string) error {

@@ -14,7 +14,7 @@ func WebsocketServer(r *gin.Engine, db *sql.DB) {
 	socket.HandleSocket(r, db)
 	group := r.Group("/api/chat/group")
 	group.GET("/list", JWT.AuthMiddleware(), func(c *gin.Context) {
-		_account_ := c.Query("account")
+		_account_ := c.GetString("userID")
 		var RoomList []sqlTools.RoomDB
 		RoomList, err := sqlTools.GetChatroomLists(_account_, db)
 		if err != nil {
@@ -29,7 +29,7 @@ func WebsocketServer(r *gin.Engine, db *sql.DB) {
 
 	// 发起私聊：输入对方账号
 	group.POST("/private/create", JWT.AuthMiddleware(), func(c *gin.Context) {
-		myAccount := c.PostForm("account")
+		myAccount := c.GetString("userID")
 		friendAccount := strings.TrimSpace(c.PostForm("friend_account"))
 		if myAccount == "" || friendAccount == "" {
 			c.JSON(400, gin.H{"code": 400, "error": "参数缺失"})
@@ -61,7 +61,7 @@ func WebsocketServer(r *gin.Engine, db *sql.DB) {
 
 	// 创建群聊
 	group.POST("/create", JWT.AuthMiddleware(), func(c *gin.Context) {
-		myAccount := c.PostForm("account")
+		myAccount := c.GetString("userID")
 		groupName := strings.TrimSpace(c.PostForm("group_name"))
 		membersStr := c.PostForm("members")
 		if myAccount == "" || groupName == "" {
@@ -79,7 +79,7 @@ func WebsocketServer(r *gin.Engine, db *sql.DB) {
 
 	// 好友列表
 	group.GET("/friends", JWT.AuthMiddleware(), func(c *gin.Context) {
-		myAccount := c.Query("account")
+		myAccount := c.GetString("userID")
 		list, err := sqlTools.GetFriendList(myAccount, db)
 		if err != nil {
 			c.JSON(500, gin.H{"code": 500, "error": err.Error()})
@@ -90,8 +90,20 @@ func WebsocketServer(r *gin.Engine, db *sql.DB) {
 
 	// 删除好友
 	group.POST("/friend/delete", JWT.AuthMiddleware(), func(c *gin.Context) {
+		myAccount := c.GetString("userID")
 		roomUid := c.PostForm("room_uid")
-		err := sqlTools.DeletePrivateRoom(roomUid, db)
+		if roomUid == "" {
+			c.JSON(400, gin.H{"code": 400, "error": "房间号不能为空"})
+			return
+		}
+		// 校验当前用户确实在这个房间里，防止删别人的私聊
+		var cnt int
+		err := db.QueryRow("SELECT COUNT(*) FROM `groups` WHERE uid = ? AND account = ?", roomUid, myAccount).Scan(&cnt)
+		if err != nil || cnt == 0 {
+			c.JSON(403, gin.H{"code": 403, "error": "无权删除该会话"})
+			return
+		}
+		err = sqlTools.DeletePrivateRoom(roomUid, db)
 		if err != nil {
 			c.JSON(500, gin.H{"code": 500, "error": err.Error()})
 			return

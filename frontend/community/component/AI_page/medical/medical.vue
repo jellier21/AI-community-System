@@ -210,7 +210,7 @@ const sendQuestion = async ()=>{
 	width: 100%;
 	flex: 1;
 	height: 0;              /* ← scroll-view 配合 flex 必须加 height:0 才能滚动 */
-	padding: 20rpx 24rpx calc(420rpx + env(safe-area-inset-bottom));
+	padding: 20rpx 24rpx calc(140rpx + env(safe-area-inset-bottom));
 	box-sizing: border-box;
 }
 

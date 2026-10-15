@@ -42,7 +42,7 @@ func StartUserServeAPI(r *gin.Engine, db *sql.DB) {
 		if err != nil {
 			c.JSON(500, gin.H{
 				"code":  500,
-				"error": "Registration failed",
+				"error": err.Error(),
 			})
 			return
 		}
@@ -118,7 +118,7 @@ func StartUserServeAPI(r *gin.Engine, db *sql.DB) {
 	}
 	amend := user.Group("/amend")
 	amend.POST("/nick", JWT.AuthMiddleware(), func(c *gin.Context) {
-		account := c.PostForm("account")
+		account := c.GetString("userID")
 		nickname := c.PostForm("nickname")
 		if account == "" {
 			c.JSON(400, gin.H{
@@ -154,7 +154,7 @@ func StartUserServeAPI(r *gin.Engine, db *sql.DB) {
 		})
 	})
 	amend.POST("/password", JWT.AuthMiddleware(), func(c *gin.Context) {
-		account := c.PostForm("account")
+		account := c.GetString("userID")
 		password := c.PostForm("password_new")
 		password2 := c.PostForm("password_old")
 		if account == "" || password == "" {
@@ -165,7 +165,7 @@ func StartUserServeAPI(r *gin.Engine, db *sql.DB) {
 			log.Printf("Received empty account or password")
 			return
 		}
-		log.Printf("收到User: %s的密码修改申请，密码： %s", account, password)
+		log.Printf("收到User: %s的密码修改申请", account)
 
 		err := sqlTools.AmendPasswordByAccount(account, password, password2, db)
 		if err != nil {
@@ -181,7 +181,7 @@ func StartUserServeAPI(r *gin.Engine, db *sql.DB) {
 		})
 	})
 	amend.POST("/signature", JWT.AuthMiddleware(), func(c *gin.Context) {
-		account := c.PostForm("account")
+		account := c.GetString("userID")
 		signature := c.PostForm("signature")
 		if account == "" || signature == "" {
 			c.JSON(400, gin.H{
@@ -191,7 +191,7 @@ func StartUserServeAPI(r *gin.Engine, db *sql.DB) {
 			log.Printf("Received empty account or signature")
 			return
 		}
-		log.Printf("收到User: %s的签名修改申请，签名： %s", account, signature)
+		log.Printf("收到User: %s的签名修改申请", account)
 
 		err := sqlTools.AmendMySignatureByAccount(signature, account, db)
 		if err != nil {
@@ -207,7 +207,7 @@ func StartUserServeAPI(r *gin.Engine, db *sql.DB) {
 		})
 	})
 	amend.POST("/avatar", JWT.AuthMiddleware(), func(c *gin.Context) {
-		account := c.PostForm("account")
+		account := c.GetString("userID")
 		avatar := c.PostForm("avatar")
 		if account == "" {
 			c.JSON(400, gin.H{"code": 400, "error": "账号不能为空"})

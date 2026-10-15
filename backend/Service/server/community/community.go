@@ -30,7 +30,7 @@ func HandleCommunity(r *gin.Engine, db *sql.DB) {
 		c.JSON(200, gin.H{"message": "Community created successfully"})
 	})
 	community.POST("/delete", JWT.AuthMiddleware(), func(c *gin.Context) {
-		_account_ := c.PostForm("account")
+		_account_ := c.GetString("userID")
 		err := sqlTools.QuitCommunity(_account_, db)
 		if err != nil {
 			c.JSON(500, gin.H{"error": err.Error()})

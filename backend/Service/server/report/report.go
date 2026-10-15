@@ -22,6 +22,11 @@ func HandleReport(r *gin.Engine, db *sql.DB) {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "未查询到所属社区"})
 			return
 		}
+		// 只有 leader 能生成 AI 周报
+		if err := sqlTools.CheckLeaderOfCommunity(account, communityUid, db); err != nil {
+			c.JSON(http.StatusForbidden, gin.H{"error": "只有社区负责人能生成周报"})
+			return
+		}
 		communityInfo, err := sqlTools.GetCommunityInfo(communityUid, db)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "查询社区信息失败"})

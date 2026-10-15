@@ -1,13 +1,13 @@
 from PIL import Image
 from langchain_core.messages import HumanMessage
 
-from .util.model import GlmModel46_Init, UseToolAnswer, AnalyseImageMessage, PhysicianAgent, JudgeWheaterMedical, \
+from .util.model import ImageModel_Init, UseToolAnswer, AnalyseImageMessage, PhysicianAgent, JudgeWheaterMedical, \
     SolutionTeacher, SeeImageMessage, MapReader, WeeklyReportAgent
 from .tools.tools import build_articledata
 
 
 def TextAskAnswer(word):
-    llm = GlmModel46_Init()
+    llm = ImageModel_Init()
     return llm.invoke(word)
 
 

@@ -104,7 +104,7 @@ func GetCommunityInfo(Uid string, db *sql.DB) (Community, error) {
 	}
 	if rows.Next() {
 		var community Community
-		err = rows.Scan(&community.Uid, &community.Leader, &community.Name, &community.Description)
+		err = rows.Scan(&community.Uid, &community.Name, &community.Description, &community.Leader)
 		if err != nil {
 			log.Println("扫描失败:", err)
 			return Community{}, err
@@ -116,7 +116,7 @@ func GetCommunityInfo(Uid string, db *sql.DB) (Community, error) {
 
 func QuitCommunity(account string, db *sql.DB) error {
 	log.Println("account:", account)
-	sqlStr := "SELECT leader FROM community WHERE leader = ?"
+	sqlStr := "SELECT uid FROM community WHERE leader = ?"
 	var CommunityUid string
 	err := db.QueryRow(sqlStr, account).Scan(&CommunityUid)
 	if err != nil {
@@ -142,14 +142,14 @@ func QuitCommunity(account string, db *sql.DB) error {
 		return nil
 
 	}
-	sqlDel := "DELETE FROM community WHERE leader = ?"
+	sqlDel := "DELETE FROM community WHERE uid = ?"
 	_, err = db.Exec(sqlDel, CommunityUid)
 	if err != nil {
 		log.Println("解散社区失败:", err)
 		return err
 	}
-	sqlDel = "DELETE FROM `join` WHERE account = ?"
-	_, err = db.Exec(sqlDel, account)
+	sqlDel = "DELETE FROM `join` WHERE community = ?"
+	_, err = db.Exec(sqlDel, CommunityUid)
 	if err != nil {
 		log.Println("退出社区失败:", err)
 		return err

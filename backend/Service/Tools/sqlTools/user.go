@@ -4,6 +4,7 @@ import (
 	"Service/Tools/JWT"
 	"Service/Tools/cryptography"
 	"database/sql"
+	"errors"
 	"fmt"
 	"log"
 )
@@ -17,13 +18,27 @@ type User struct {
 }
 
 func RegisterTools(_account_, _password_ string, db *sql.DB) error {
+	// 先查重
+	var existCnt int
+	if err := db.QueryRow("SELECT COUNT(*) FROM user WHERE account = ?", _account_).Scan(&existCnt); err != nil {
+		log.Println("查重失败:", err)
+		return err
+	}
+	if existCnt > 0 {
+		return errors.New("账号已存在")
+	}
+
 	var count int
 	db.QueryRow("SELECT COUNT(*) FROM user").Scan(&count)
 	tempNick := fmt.Sprintf("user_%05d", count+1)
-	tempPassword := cryptography.PasswordToHash(_password_)
+	tempPassword, err := cryptography.PasswordToHash(_password_)
+	if err != nil {
+		log.Println("密码哈希失败:", err)
+		return err
+	}
 
 	sqlStr := "INSERT INTO user (account, password, nick) VALUES (?, ?, ?)"
-	_, err := db.Exec(sqlStr, _account_, tempPassword, tempNick)
+	_, err = db.Exec(sqlStr, _account_, tempPassword, tempNick)
 	if err != nil {
 		log.Println("注册用户失败:", err)
 	}
@@ -70,9 +85,13 @@ func AmendPasswordByAccount(_account_, _new_password_, _old_password_ string, db
 
 	if err = cryptography.HashToPasswordBool(PasswordDB, _old_password_); err != nil {
 		log.Println("密码错误:", err)
-		return fmt.Errorf("密码错误")
+		return fmt.Errorf("原密码错误")
 	}
-	newPassword := cryptography.PasswordToHash(_new_password_)
+	newPassword, err := cryptography.PasswordToHash(_new_password_)
+	if err != nil {
+		log.Println("新密码哈希失败:", err)
+		return err
+	}
 	sqlStr := "update user set password = ? where account = ?"
 	_, err = db.Exec(sqlStr, newPassword, _account_)
 	return err

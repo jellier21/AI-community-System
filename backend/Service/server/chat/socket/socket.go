@@ -27,9 +27,9 @@ func HandleSocket(r *gin.Engine, db *sql.DB) {
 	hub := NewSocket(db)
 	go hub.Run(db)
 	r.GET("/ws", JWT.AuthMiddleware(), func(c *gin.Context) {
-		_account_user_ := c.Request.URL.Query().Get("account")
+		_account_user_ := c.GetString("userID")
 		if _account_user_ == "" {
-			c.JSON(400, gin.H{"error": "Account 为空"})
+			c.JSON(400, gin.H{"error": "无法识别当前用户"})
 			return
 		}
 

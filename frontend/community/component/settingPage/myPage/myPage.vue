@@ -143,6 +143,27 @@
 		}catch(e){}
 	}
 
+	// 以服务端资料为准拉取签名（避免本地 storage 残留上一个账号的签名）
+	const fetchProfile = async () => {
+		try {
+			const res = await request({
+				url: '/api/user/query/profile',
+				data: { account: account.value }
+			})
+			if (res.code === 200 && res.profile) {
+				signature.value = res.profile.signature || ''
+				nickname.value = res.profile.nickname || nickname.value
+				if (res.profile.signature) {
+					uni.setStorageSync('user_signature', res.profile.signature)
+				} else {
+					uni.removeStorageSync('user_signature')
+				}
+			}
+		} catch (e) {
+			console.error('查询用户资料失败:', e)
+		}
+	}
+
 	const onAvatarClick = ()=>{
 		uni.showModal({
 			title: '修改头像',
@@ -176,9 +197,11 @@
 
 	onLoad(() => {
 		account.value = uni.getStorageSync('user_account') || ''
+		// 本地缓存仅作首屏占位，最终以服务端 profile 为准
 		signature.value = uni.getStorageSync('user_signature') || ''
 		fetchNickname()
 		fetchAvatar()
+		fetchProfile()
 	})
 
 

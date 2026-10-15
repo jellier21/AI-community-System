@@ -53,9 +53,16 @@ func HandleShare(r *gin.Engine, db *sql.DB) {
 		c.JSON(http.StatusOK, gin.H{"info": list})
 	})
 
-	// 全站最新动态（首页"为您推荐"用）
+	// 本社区最新动态（首页"为您推荐"用，按当前登录用户所在社区过滤）
 	g.GET("/latest", JWT.AuthMiddleware(), func(c *gin.Context) {
-		list, err := sqlTools.GetLatestShares(3, db)
+		account := c.GetString("userID")
+		communityUid, err := sqlTools.GetCommunityUID(account, db)
+		if err != nil {
+			// 用户未加入任何社区，返回空列表，而不是全站动态
+			c.JSON(http.StatusOK, gin.H{"info": []interface{}{}})
+			return
+		}
+		list, err := sqlTools.GetLatestShares(communityUid, 3, db)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return

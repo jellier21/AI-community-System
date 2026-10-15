@@ -7,11 +7,11 @@ from langgraph.checkpoint.memory import InMemorySaver
 from service.llm.tools.tools import ReadMedicalLogClient
 
 
-def GlmModel46_Init():
+def ImageModel_Init():
     return ChatOpenAI(
-        model="glm-4.6v",
-        base_url=os.getenv("GLM_BASEURL"),
-        api_key=os.getenv("GLM_46V_KEY"),
+        model=os.getenv("IMAGE_MODEL_NAME"),
+        base_url=os.getenv("IMAGE_BASEURL"),
+        api_key=os.getenv("IMAGE_KEY"),
         max_tokens=1200,
         timeout=180,
         max_retries=1,
@@ -19,11 +19,11 @@ def GlmModel46_Init():
     )
 
 
-def GlmModel45_Init():
+def TextModel_Init():
     return ChatOpenAI(
-        model="glm-4.5-air",
-        base_url=os.getenv("GLM_BASEURL"),
-        api_key=os.getenv("GLM_46V_KEY"),
+        model=os.getenv("TEXTMODEL_NAME"),
+        base_url=os.getenv("TEXT_BASEURL"),
+        api_key=os.getenv("TEXT_KEY"),
         max_tokens=2048,
         timeout=180,
         max_retries=1,
@@ -33,7 +33,7 @@ def GlmModel45_Init():
 
 def UseToolAnswer(tools: list):
     print(f"注册工具: {tools}")
-    model = GlmModel46_Init()
+    model = ImageModel_Init()
     return create_agent(
         model=model,
         tools=tools,
@@ -42,7 +42,7 @@ def UseToolAnswer(tools: list):
 
 
 def AnalyseImageMessage():
-    model = GlmModel46_Init()
+    model = ImageModel_Init()
     return create_agent(
         model=model,
         system_prompt="【角色】：你是一个观察分析大师，并且外科医学知识丰富，识别图片内容并给出伤口的详细描述，包括病状、面积、大小、颜色等。"
@@ -59,7 +59,7 @@ _physician_agent = None
 def PhysicianAgent():
     global _physician_agent
     if _physician_agent is None:  # 只编译一次，避免每次请求重新编译
-        model = GlmModel45_Init()
+        model = TextModel_Init()
         _physician_agent = create_agent(
             model=model,
             tools=[ReadMedicalLogClient],
@@ -77,7 +77,7 @@ def PhysicianAgent():
 
 
 def JudgeWheaterMedical():
-    model = GlmModel45_Init()
+    model = TextModel_Init()
     return create_agent(
         model=model,
         system_prompt=(
@@ -93,7 +93,7 @@ def JudgeWheaterMedical():
 
 def SeeImageMessage():
     """图片内容分析 agent：识别图片内容并给出文字描述"""
-    model = GlmModel46_Init()
+    model = ImageModel_Init()
     return create_agent(
         model=model,
         system_prompt="【角色】：你是一个图像理解专家，能够识别图片内容并给出详细文字描述，包括主体、场景、文字、物体等。"
@@ -108,7 +108,7 @@ def SolutionTeacher():
     """百科问答 agent（带记忆：按账号 thread_id 保存会话历史）"""
     global _solution_teacher_agent
     if _solution_teacher_agent is None:  # 只编译一次，共享检查点记忆才生效
-        model = GlmModel45_Init()
+        model = TextModel_Init()
         _solution_teacher_agent = create_agent(
             model=model,
             system_prompt="【角色】：你是一个知识渊博的百科问答专家，能够解答科学、历史、文化、技术、生活常识等各种知识性问题。"
@@ -120,7 +120,7 @@ def SolutionTeacher():
 
 def MapReader():
     """图片识别 agent：识别图片内容并给出详细解读"""
-    model = GlmModel46_Init()
+    model = ImageModel_Init()
     return create_agent(
         model=model,
         system_prompt="【角色】：你是一个图片识别专家，能够全面识别并解读图片内容。"
@@ -132,7 +132,7 @@ def MapReader():
 
 def WeeklyReportAgent():
     """社区周报生成 agent"""
-    model = GlmModel45_Init()
+    model = TextModel_Init()
     return create_agent(
         model=model,
         system_prompt="【角色】：你是一个社区运营分析专家，根据社区一周的公告记录和成员医疗咨询记录，生成社区周报。"

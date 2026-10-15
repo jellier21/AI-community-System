@@ -91,6 +91,9 @@
 					uni.showToast({ title: '登录成功', icon: 'success' })
 					uni.setStorageSync('jwtToken', res.data.token)
 					uni.setStorageSync('user_account', L_account.value)
+					// 清除上一个账号残留的本地资料，避免串号
+					uni.removeStorageSync('user_signature')
+					uni.removeStorageSync('user_nickname')
 					setTimeout(() => {
 						uni.switchTab({
 							url:'/pages/home/home',
@@ -161,6 +164,9 @@
 										if(loginRes.data.code === 200){
 											uni.setStorageSync('jwtToken', loginRes.data.token)
 											uni.setStorageSync('user_account', _r_account_.value)
+											// 新账号登录，清掉任何上一个账号的残留缓存
+											uni.removeStorageSync('user_signature')
+											uni.removeStorageSync('user_nickname')
 											// 如果选了头像，上传七牛云
 											if(avatarPath.value){
 												try{

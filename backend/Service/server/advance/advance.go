@@ -33,7 +33,17 @@ func HandleAdvance(r *gin.Engine, db *sql.DB) {
 
 	// leader 查看建议列表
 	g.GET("/list", JWT.AuthMiddleware(), func(c *gin.Context) {
+		leaderAccount := c.GetString("userID")
 		communityUid := c.Query("community_uid")
+		if communityUid == "" {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "参数缺失"})
+			return
+		}
+		// 只有本社区 leader 能看建议列表
+		if err := sqlTools.CheckLeaderOfCommunity(leaderAccount, communityUid, db); err != nil {
+			c.JSON(http.StatusForbidden, gin.H{"error": "只有负责人能查看建议列表"})
+			return
+		}
 		list, err := sqlTools.GetAdvanceList(communityUid, db)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

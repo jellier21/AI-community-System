@@ -162,6 +162,8 @@ const QuitAccount = ()=>{
 			if(res.confirm){
 				uni.removeStorageSync("jwtToken")
 				uni.removeStorageSync("user_account")
+				uni.removeStorageSync("user_signature")
+				uni.removeStorageSync("user_nickname")
 				uni.reLaunch({
 					url:"/pages/index/index"
 				})
@@ -243,6 +245,8 @@ const CheckCommunityStatus = ()=>{
 				// 令牌失效，清除登录态并回登录页
 				uni.removeStorageSync('jwtToken')
 				uni.removeStorageSync('user_account')
+				uni.removeStorageSync('user_signature')
+				uni.removeStorageSync('user_nickname')
 				uni.reLaunch({ url: '/pages/index/index' })
 			} else {
 				// 未加入任何社区（后端返回 500 + error "未查询到用户加入社区"）
