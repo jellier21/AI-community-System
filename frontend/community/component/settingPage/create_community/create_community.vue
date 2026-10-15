@@ -41,7 +41,7 @@
 
 <script setup>
 	import { ref } from 'vue';
-	import { onLoad } from '@dcloudio/uni-app';
+	import { onLoad, onPullDownRefresh } from '@dcloudio/uni-app';
 	import { BASEURL_NAME } from '@/util/configuration.js';
 
 	const account = ref('')
@@ -52,6 +52,11 @@
 
 	onLoad(() => {
 		account.value = uni.getStorageSync('user_account') || ''
+	})
+
+	// 下拉刷新：表单页无数据可刷，直接结束刷新动画
+	onPullDownRefresh(() => {
+		uni.stopPullDownRefresh()
 	})
 
 	// 选择社区头像（本地预览）
@@ -135,7 +140,8 @@
 		justify-content: center;
 		overflow: hidden;
 		box-sizing: border-box;
-		border: 2rpx dashed #c0c4cc;
+		border: 2rpx dashed #a9c4ff;
+		box-shadow: 0 8rpx 24rpx rgba(74, 125, 255, 0.12);
 
 		.avatar-img {
 			width: 100%;
@@ -163,9 +169,10 @@
 	/* ---------- 表单 ---------- */
 	.form-card {
 		background: #fff;
-		border-radius: 20rpx;
+		border-radius: 24rpx;
 		padding: 0 32rpx;
 		margin-bottom: 60rpx;
+		box-shadow: 0 8rpx 24rpx rgba(29, 33, 41, 0.05);
 
 		.form-item {
 			padding: 32rpx 0;
@@ -187,7 +194,8 @@
 				height: 72rpx;
 				padding: 0 24rpx;
 				background: #f5f6f7;
-				border-radius: 12rpx;
+				border: 2rpx solid #eef0f3;
+				border-radius: 16rpx;
 				font-size: 28rpx;
 				color: #1a1a1a;
 				box-sizing: border-box;
@@ -198,7 +206,8 @@
 				height: 160rpx;
 				padding: 20rpx 24rpx;
 				background: #f5f6f7;
-				border-radius: 12rpx;
+				border: 2rpx solid #eef0f3;
+				border-radius: 16rpx;
 				font-size: 28rpx;
 				color: #1a1a1a;
 				box-sizing: border-box;
@@ -216,17 +225,19 @@
 		font-size: 32rpx;
 		font-weight: 500;
 		color: #fff;
-		background: #07c160;
-		border-radius: 16rpx;
+		background: linear-gradient(135deg, #4a7dff, #6ea3ff);
+		border-radius: 999rpx;
 		box-sizing: border-box;
+		box-shadow: 0 10rpx 24rpx rgba(74, 125, 255, 0.3);
 
 		&::after {
 			border: none;
 		}
 
 		&[disabled] {
-			background: #9adcb3;
+			background: #c8d4ff;
 			color: #fff;
+			box-shadow: none;
 		}
 	}
 </style>

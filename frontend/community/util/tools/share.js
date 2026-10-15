@@ -47,10 +47,10 @@ const uploadOneImage = async (filePath)=>{
 	const uptoken = tokenRes.uptoken
 	const domain = tokenRes.domain
 
-	// 2. 直传七牛云（华北区 z2）
+	// 2. 直传七牛云（华北 z2 现行上传域名 up-z2.qiniup.com）
 	return new Promise((resolve, reject)=>{
 		uni.uploadFile({
-			url: 'https://upload-z2.qiniup.com',
+			url: 'https://up-z2.qiniup.com',
 			filePath: filePath,
 			name: 'file',
 			formData: { token: uptoken, key: 'share/' + Date.now() + '.jpg' },

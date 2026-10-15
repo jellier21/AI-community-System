@@ -1,5 +1,9 @@
 <template>
 	<view>
+		<view class="tools-hero">
+			<text class="hero-title">服务工具箱</text>
+			<text class="hero-sub">一站式社区服务 · 便捷高效</text>
+		</view>
 		<view class="tool-container">
 			<text class="title">工具箱</text>
 			<view class="tool-area">
@@ -78,7 +82,7 @@
 <script setup>
 import {ref} from 'vue'
 import {request} from '@/util/request.js'
-import { onShow } from '@dcloudio/uni-app'
+import { onShow, onPullDownRefresh } from '@dcloudio/uni-app'
 
 
 
@@ -105,12 +109,43 @@ const IsLeaderCheck = async ()=>{
 onShow(()=>{
 	IsLeaderCheck()
 })
+
+// 下拉刷新：重新检查是否管理员
+onPullDownRefresh(async () => {
+	await IsLeaderCheck()
+	uni.stopPullDownRefresh()
+})
 </script>
 
 <style lang="scss">
 	page {
 		background: #f4f6f9;
 		padding-top: var(--status-bar-height);
+	}
+
+	/* ---------- 顶部品牌横幅 ---------- */
+	.tools-hero {
+		margin: 24rpx 24rpx 4rpx;
+		padding: 44rpx 36rpx;
+		border-radius: 28rpx;
+		background: linear-gradient(135deg, #4a7dff 0%, #7aa8ff 100%);
+		box-shadow: 0 12rpx 32rpx rgba(74, 125, 255, 0.28);
+		display: flex;
+		flex-direction: column;
+
+		.hero-title {
+			font-size: 44rpx;
+			font-weight: 700;
+			color: #ffffff;
+			letter-spacing: 2rpx;
+		}
+
+		.hero-sub {
+			margin-top: 12rpx;
+			font-size: 24rpx;
+			color: rgba(255, 255, 255, 0.85);
+			letter-spacing: 1rpx;
+		}
 	}
 
 	/* ---------- 公共卡片容器 ---------- */
@@ -162,6 +197,10 @@ onShow(()=>{
 	.manager-container image {
 		width: 76rpx;
 		height: 76rpx;
+		padding: 14rpx;
+		box-sizing: border-box;
+		background: #eef3ff;
+		border-radius: 50%;
 		margin-bottom: 14rpx;
 	}
 

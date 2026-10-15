@@ -48,7 +48,10 @@
 					<view class="rec-content">{{ item.content }}</view>
 					<image v-if="firstImage(item.images)" class="rec-thumb" :src="firstImage(item.images)" mode="aspectFill"></image>
 				</view>
-				<view class="rec-more" @click="goShare">查看全部动态 ></view>
+				<view class="rec-more" @click="goShare">
+						<text>查看全部动态</text>
+						<image class="rec-more-icon" src="/static/right.png" mode="aspectFit"></image>
+					</view>
 			</view>
 			<view class="recommend-container rec-empty" v-else>
 				暂无动态，快去社区圈发布第一条吧
@@ -59,6 +62,7 @@
 
 <script setup>
 import { onMounted, onUnmounted, ref } from 'vue';
+import { onPullDownRefresh } from '@dcloudio/uni-app';
 const domain = ref()
 const GreetTime = ()=>{
 	if(currentHour.value < 6){
@@ -135,6 +139,14 @@ onUnmounted(() => {
 	if(timer)
 		clearInterval(timer)
 })
+
+// 下拉刷新：刷新问候语、最新公告与推荐动态
+onPullDownRefresh(async () => {
+	GreetTime()
+	await loadLatestNotice()
+	await loadLatestShares()
+	uni.stopPullDownRefresh()
+})
 </script>
 
 <style lang="scss" scoped>
@@ -152,16 +164,43 @@ page {
 
 /* ============ 顶部欢迎区 ============ */
 .Welcome {
+	position: relative;
+	overflow: hidden;
 	display: flex;
 	flex-direction: row;
 	align-items: center;
 	justify-content: space-between;
-	padding: 40rpx 32rpx;
+	padding: 44rpx 32rpx;
 	border-radius: 28rpx;
 	background: linear-gradient(135deg, #4a7dff 0%, #7aa8ff 100%);
-	box-shadow: 0 12rpx 32rpx rgba(74, 125, 255, 0.25);
+	box-shadow: 0 12rpx 32rpx rgba(74, 125, 255, 0.28);
+
+	/* 装饰圆 */
+	&::before {
+		content: '';
+		position: absolute;
+		right: -80rpx;
+		top: -80rpx;
+		width: 280rpx;
+		height: 280rpx;
+		border-radius: 50%;
+		background: rgba(255, 255, 255, 0.14);
+	}
+
+	&::after {
+		content: '';
+		position: absolute;
+		right: 96rpx;
+		bottom: -120rpx;
+		width: 220rpx;
+		height: 220rpx;
+		border-radius: 50%;
+		background: rgba(255, 255, 255, 0.08);
+	}
 
 	.greet {
+		position: relative;
+		z-index: 1;
 		flex: 1;
 		min-width: 0;
 		display: flex;
@@ -186,6 +225,8 @@ page {
 	}
 
 	.header-image {
+		position: relative;
+		z-index: 1;
 		width: 140rpx;
 		height: 140rpx;
 		margin-left: 24rpx;
@@ -223,6 +264,10 @@ page {
 		image {
 			width: 88rpx;
 			height: 88rpx;
+			padding: 16rpx;
+			box-sizing: border-box;
+			background: linear-gradient(135deg, #eef3ff, #dbe8ff);
+			border-radius: 50%;
 			margin-bottom: 18rpx;
 		}
 
@@ -241,10 +286,22 @@ page {
 
 /* ============ 公告 ============ */
 .announcement {
+	position: relative;
 	background: #ffffff;
 	border-radius: 24rpx;
 	padding: 28rpx;
 	box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.04);
+
+	&::before {
+		content: '';
+		position: absolute;
+		left: 0;
+		top: 28rpx;
+		bottom: 28rpx;
+		width: 6rpx;
+		border-radius: 0 6rpx 6rpx 0;
+		background: linear-gradient(180deg, #4a7dff, #7aa8ff);
+	}
 
 	&:active {
 		background: #fafbfc;
@@ -319,9 +376,14 @@ page {
 	}
 
 	.rec-item {
-		padding: 20rpx 0;
+		padding: 20rpx 12rpx;
+		border-radius: 12rpx;
 		&:not(:last-child) {
 			border-bottom: 1rpx solid #f2f3f5;
+		}
+
+		&:active {
+			background: #fafbfc;
 		}
 	}
 
@@ -380,9 +442,18 @@ page {
 
 	.rec-more {
 		padding-top: 20rpx;
-		text-align: center;
+		display: flex;
+		align-items: center;
+		justify-content: center;
 		font-size: 26rpx;
 		color: #4a7dff;
+
+		.rec-more-icon {
+			width: 24rpx;
+			height: 24rpx;
+			margin-left: 8rpx;
+			opacity: 0.7;
+		}
 	}
 }
 </style>

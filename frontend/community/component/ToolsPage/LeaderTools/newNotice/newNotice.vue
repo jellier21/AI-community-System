@@ -23,7 +23,7 @@
 
 <script setup>
 import {ref, onMounted} from 'vue'
-import {onShow} from '@dcloudio/uni-app'
+import {onShow, onPullDownRefresh} from '@dcloudio/uni-app'
 import {PublishNotice, GetNoticeList} from '@/util/tools/notice'
 import { GetCommunityUid } from '@/util/tools/member'
 
@@ -58,6 +58,13 @@ onShow(async ()=>{
 	community_Number.value = await GetCommunityUid()
 	loadList()
 })
+
+// 下拉刷新：刷新历史公告列表
+onPullDownRefresh(async () => {
+	community_Number.value = await GetCommunityUid()
+	await loadList()
+	uni.stopPullDownRefresh()
+})
 </script>
 
 <style scoped>
@@ -65,42 +72,60 @@ onShow(async ()=>{
 	padding: 24rpx;
 }
 .section-title {
+	position: relative;
+	padding-left: 20rpx;
 	font-size: 32rpx;
 	font-weight: 600;
 	color: #222;
 	margin-bottom: 20rpx;
 }
+.section-title::before {
+	content: '';
+	position: absolute;
+	left: 0;
+	top: 50%;
+	transform: translateY(-50%);
+	width: 6rpx;
+	height: 28rpx;
+	border-radius: 6rpx;
+	background: linear-gradient(180deg, #4a7dff, #7aa8ff);
+}
 .issue-notice {
 	background: #fff;
-	border-radius: 20rpx;
+	border-radius: 24rpx;
 	padding: 28rpx;
 	margin-bottom: 30rpx;
+	box-shadow: 0 8rpx 24rpx rgba(29, 33, 41, 0.05);
 }
 .input-title {
-	border: 1rpx solid #ddd;
-	border-radius: 12rpx;
+	border: 2rpx solid #e8eaed;
+	border-radius: 16rpx;
 	padding: 20rpx;
 	font-size: 28rpx;
+	background: #fafbfc;
 	margin-bottom: 20rpx;
 }
 .input-content {
-	border: 1rpx solid #ddd;
-	border-radius: 12rpx;
+	border: 2rpx solid #e8eaed;
+	border-radius: 16rpx;
 	padding: 20rpx;
 	font-size: 28rpx;
+	background: #fafbfc;
 	height: 200rpx;
 	margin-bottom: 20rpx;
 }
 .publish-btn {
-	background: #4a7dff;
+	background: linear-gradient(135deg, #4a7dff, #6ea3ff);
 	color: #fff;
 	border-radius: 999rpx;
 	font-size: 28rpx;
+	box-shadow: 0 8rpx 20rpx rgba(74, 125, 255, 0.3);
 }
 .notice-history {
 	background: #fff;
-	border-radius: 20rpx;
+	border-radius: 24rpx;
 	padding: 28rpx;
+	box-shadow: 0 8rpx 24rpx rgba(29, 33, 41, 0.05);
 }
 .notice-item {
 	padding: 20rpx 0;
@@ -116,6 +141,7 @@ onShow(async ()=>{
 	font-size: 28rpx;
 	color: #555;
 	margin-bottom: 10rpx;
+	line-height: 1.6;
 }
 .notice-time {
 	font-size: 22rpx;

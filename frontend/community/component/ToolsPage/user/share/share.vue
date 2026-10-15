@@ -79,7 +79,7 @@
 
 <script setup>
 import {ref} from 'vue'
-import {onShow} from '@dcloudio/uni-app'
+import {onShow, onPullDownRefresh} from '@dcloudio/uni-app'
 import {
 	PublishShare, GetCommunityShares, DeleteShare, UpdateShare,
 	chooseAndUploadImages
@@ -181,6 +181,12 @@ const previewImage = (urls, current)=>{
 }
 
 onShow(loadList)
+
+// 下拉刷新：刷新社区圈动态
+onPullDownRefresh(async () => {
+	await loadList()
+	uni.stopPullDownRefresh()
+})
 </script>
 
 <style scoped>
@@ -198,7 +204,11 @@ onShow(loadList)
 	box-shadow: 0 2rpx 12rpx rgba(0,0,0,0.04);
 }
 .navbar-title {
-	font-size: 36rpx; font-weight: 700; color: #1a1a1a;
+	font-size: 36rpx; font-weight: 700;
+	background: linear-gradient(135deg, #4a7dff, #7aa8ff);
+	-webkit-background-clip: text;
+	background-clip: text;
+	-webkit-text-fill-color: transparent;
 }
 .add-btn {
 	width: 64rpx; height: 64rpx; border-radius: 50%;
@@ -216,7 +226,7 @@ onShow(loadList)
 .item {
 	background: #fff; border-radius: 20rpx;
 	padding: 24rpx; margin-bottom: 20rpx;
-	box-shadow: 0 2rpx 12rpx rgba(0,0,0,0.03);
+	box-shadow: 0 8rpx 24rpx rgba(29,33,41,0.05);
 }
 .item-head {
 	display: flex; align-items: center; margin-bottom: 16rpx;
@@ -225,6 +235,7 @@ onShow(loadList)
 	width: 72rpx; height: 72rpx; border-radius: 50%;
 	margin-right: 16rpx;
 	background: #f0f0f0;
+	border: 2rpx solid #e8eefc;
 }
 
 .head-info { flex: 1; }

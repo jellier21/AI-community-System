@@ -56,12 +56,20 @@ const uploadFile = ({ url, filePath, name = 'file', formData = {}, header = {}, 
           uni.reLaunch({ url: '/pages/index/index' })
           reject(new Error('登录已过期'))
         } else {
-          reject(new Error(`上传失败：${res.statusCode}`))
+          let body = ''
+          try {
+            const parsed = JSON.parse(res.data)
+            body = parsed.error || parsed.message || JSON.stringify(parsed)
+          } catch (e) {
+            body = typeof res.data === 'string' ? res.data : ''
+          }
+          reject(new Error(`上传失败(${res.statusCode})：${String(body).slice(0, 80)}`))
         }
       },
       fail: (err) => {
-        uni.showToast({ title: '上传失败', icon: 'none' })
-        reject(err)
+        const msg = (err && err.errMsg) ? err.errMsg : '上传失败'
+        uni.showToast({ title: msg.length > 18 ? msg.slice(0, 18) : msg, icon: 'none' })
+        reject(new Error(msg))
       }
     })
   })

@@ -54,6 +54,7 @@
 <script setup>
 import {ref, computed} from 'vue'
 import {SubmitTeacherQuestion} from '@/util/tools/mondo.js'
+import { onPullDownRefresh } from '@dcloudio/uni-app'
 
 const chatList = ref([])        // 聊天消息
 const text = ref('')            // 输入框内容
@@ -138,12 +139,18 @@ const sendQuestion = async ()=>{
 		chatList.value.push({ role: 'ai', content: answer })
 	} catch (err) {
 		console.log('发送失败:', err)
-		chatList.value.push({ role: 'ai', content: '发送失败，请重试' })
+		const msg = (err && err.message) ? err.message : '发送失败，请重试'
+		chatList.value.push({ role: 'ai', content: '发送失败：' + msg })
 	} finally {
 		loading.value = false
 		scrollToBottom()
 	}
 }
+
+// 下拉刷新：聊天页无可刷数据，直接结束刷新动画
+onPullDownRefresh(() => {
+	uni.stopPullDownRefresh()
+})
 </script>
 
 
@@ -325,8 +332,16 @@ const sendQuestion = async ()=>{
 			line-height: 1.6;
 			word-break: break-all;
 		}
-		.chat-msg.user .msg-bubble{ background: #4b8cff; color: #fff; }
-		.chat-msg.ai .msg-bubble{ background: #fff; color: #333; }
+		.chat-msg.user .msg-bubble{
+			background: linear-gradient(135deg, #4a7dff, #6ea3ff);
+			color: #fff;
+			box-shadow: 0 6rpx 16rpx rgba(74, 125, 255, 0.22);
+		}
+		.chat-msg.ai .msg-bubble{
+			background: #fff;
+			color: #333;
+			box-shadow: 0 4rpx 16rpx rgba(29, 33, 41, 0.05);
+		}
 		.msg-image{
 			width: 160rpx; height: 160rpx;
 			border-radius: 12rpx;

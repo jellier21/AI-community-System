@@ -22,7 +22,7 @@
 
 <script setup>
 import {ref} from 'vue'
-import {onShow} from '@dcloudio/uni-app'
+import {onShow, onPullDownRefresh} from '@dcloudio/uni-app'
 import { GetCommunityShares, DeleteShare } from '@/util/tools/share'
 import { GetCommunityUid } from '@/util/tools/member'
 
@@ -56,23 +56,45 @@ const previewImage = (urls, current)=>{
 
 
 onShow(loadList)
+
+// 下拉刷新：刷新本社区动态列表
+onPullDownRefresh(async () => {
+	await loadList()
+	uni.stopPullDownRefresh()
+})
 </script>
 
 <style scoped>
 .container { padding: 24rpx; }
 .section-title {
+	position: relative;
+	padding-left: 20rpx;
 	font-size: 32rpx; font-weight: 600; color: #222; margin-bottom: 20rpx;
 }
-.item {
-	background: #fff; border-radius: 16rpx; padding: 24rpx; margin-bottom: 16rpx;
+.section-title::before {
+	content: '';
+	position: absolute;
+	left: 0; top: 50%; transform: translateY(-50%);
+	width: 6rpx; height: 28rpx; border-radius: 6rpx;
+	background: linear-gradient(180deg, #4a7dff, #7aa8ff);
 }
-.content { font-size: 28rpx; color: #333; margin-bottom: 10rpx; }
+.item {
+	background: #fff; border-radius: 20rpx; padding: 24rpx; margin-bottom: 16rpx;
+	box-shadow: 0 8rpx 24rpx rgba(29, 33, 41, 0.05);
+}
+.content { font-size: 28rpx; color: #333; margin-bottom: 10rpx; line-height: 1.6; }
 .meta {
 	display: flex; justify-content: space-between;
 	font-size: 22rpx; color: #999; margin-bottom: 10rpx;
 }
 .actions { margin-top: 10rpx; }
-.action-btn.del { font-size: 26rpx; color: #f53f3f; }
+.action-btn.del {
+	display: inline-flex; align-items: center;
+	padding: 8rpx 24rpx;
+	border-radius: 999rpx;
+	background: #fff1f0; color: #f53f3f;
+	font-size: 26rpx;
+}
 .img-grid {
 	display: flex; flex-wrap: wrap; gap: 12rpx; margin-bottom: 10rpx;
 }

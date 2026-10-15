@@ -32,10 +32,16 @@
 <script setup>
 import {ref} from 'vue'
 import {uploadFile} from '@/util/request.js'
+import { onPullDownRefresh } from '@dcloudio/uni-app'
 
 const imagePath = ref('')      // 选中图片本地路径
 const loading = ref(false)     // 识别中
 const result = ref('')         // 识别结果
+
+// 下拉刷新：工具页无可刷数据，直接结束刷新动画
+onPullDownRefresh(() => {
+	uni.stopPullDownRefresh()
+})
 
 // 拍照
 const takePhoto = ()=>{
@@ -81,7 +87,8 @@ const startRecognize = async ()=>{
 		result.value = answer
 	} catch (err) {
 		console.log('识别失败:', err)
-		uni.showToast({ title: '识别失败', icon: 'none' })
+		const msg = (err && err.message) ? err.message : '识别失败'
+		uni.showToast({ title: msg.length > 18 ? msg.slice(0, 18) : msg, icon: 'none' })
 	} finally {
 		loading.value = false
 		uni.hideLoading()
@@ -121,7 +128,8 @@ const markdownToHtml = (content = '')=>{
 	align-items: center;
 	justify-content: center;
 	overflow: hidden;
-	border: 2rpx dashed #c9d2e0;
+	border: 2rpx dashed #a9c4ff;
+	box-shadow: 0 8rpx 24rpx rgba(74, 125, 255, 0.08);
 }
 .preview-img{
 	width: 100%;
@@ -159,12 +167,15 @@ const markdownToHtml = (content = '')=>{
 	&:active{ opacity: 0.85; }
 }
 .btn.camera{
-	background: #3a7afe;
+	background: linear-gradient(135deg, #4a7dff, #6ea3ff);
 	color: #fff;
+	box-shadow: 0 8rpx 20rpx rgba(74, 125, 255, 0.25);
 }
 .btn.album{
 	background: #ffffff;
 	color: #333;
+	border: 2rpx solid #e5e7eb;
+	box-shadow: 0 4rpx 16rpx rgba(29, 33, 41, 0.04);
 }
 .btn.recognize{
 	width: 100%;
@@ -184,6 +195,7 @@ const markdownToHtml = (content = '')=>{
 	background: #ffffff;
 	border-radius: 24rpx;
 	padding: 24rpx;
+	box-shadow: 0 8rpx 24rpx rgba(29, 33, 41, 0.05);
 }
 .result-title{
 	font-size: 30rpx;

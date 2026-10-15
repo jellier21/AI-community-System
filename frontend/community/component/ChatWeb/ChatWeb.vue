@@ -1,28 +1,34 @@
 <template>
 	<view class="chat-container">
-		<view class="user-tool">
-			<view class="switch-tools-sign" @click="startPushList">
+		<!-- 顶部品牌横幅 -->
+		<view class="chat-header">
+			<view class="switch-tools-sign" :class="{ 'is-open': tool_list }" @click="startPushList">
 				<image src="/static/chat/push.png" mode="aspectFit"></image>
 			</view>
-			<view class="shade-index" @click="closeToolList" v-show="tool_list">
-				<view class="tool-list">
-					<view class="tool-build-connect" @click="openPrivateDialog">私聊</view>
-					<view class="tool-build-group" @click="goCreateGroup">建立群聊</view>
-					<view class="friend-manage" @click="goFriendList">好友管理</view>
+			<view class="header-right">
+				<text class="chat-header-title">消息</text>
+				<text class="chat-header-sub">{{ group_list.length }} 个会话</text>
+			</view>
+		</view>
+
+		<!-- 会话列表 -->
+		<view class="notice-container">
+			<view class="notice-list" v-for="(item,index) in group_list" :key="index">
+				<view class="chat-item" hover-class="chat-item-hover" @click="goChat(item)">
+					<view class="chat-avatar" :class="item.type === 'message' ? 'avatar-message' : 'avatar-group'">
+						{{ item.data.room_name.slice(0, 1) }}
+					</view>
+					<view class="chat-name">{{ item.data.room_name }}</view>
 				</view>
 			</view>
 		</view>
-		<view class="notice-container">
-			<view class="notice-list" v-for="(item,index) in group_list">
-				<view class="notice-item" v-if="item.type === 'message'">
-					<navigator url="/component/chatPage/chat/chat">{{ item.data.room_name }}</navigator>
-				</view>
-				<!-- <view class="chat-item" v-else>
-					<navigator url="/component/chatPage/chat/chat">{{ item.data.room_name }}</navigator>
-				</view> -->
-				<navigator :url="`/component/chatPage/chat/chat?uid=${item.data.room_id}&leader=${item.data.leader}`" class="chat-item" v-else>
-					{{ item.data.room_name }}
-				</navigator>
+
+		<!-- 全屏遮罩 + 下拉菜单 -->
+		<view class="shade-index" @click="closeToolList" v-show="tool_list">
+			<view class="tool-list">
+				<view class="tool-build-connect" @click="openPrivateDialog">私聊</view>
+				<view class="tool-build-group" @click="goCreateGroup">建立群聊</view>
+				<view class="friend-manage" @click="goFriendList">好友管理</view>
 			</view>
 		</view>
 	</view>
@@ -31,9 +37,16 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { group_list, updateGroupList, createPrivateChat } from '@/util/chat/group';
+import { onPullDownRefresh } from '@dcloudio/uni-app';
 
 onMounted(async () => {
 	await updateGroupList()
+})
+
+// 下拉刷新：刷新会话/群聊列表
+onPullDownRefresh(async () => {
+	await updateGroupList()
+	uni.stopPullDownRefresh()
 })
 
 //=========小工具按钮===========
@@ -43,6 +56,17 @@ const startPushList = ()=>{
 }
 const closeToolList = ()=>{
 	tool_list.value = false
+}
+
+// 进入会话
+const goChat = (item) => {
+	if (item.type === 'message') {
+		uni.navigateTo({ url: '/component/chatPage/chat/chat' })
+	} else {
+		uni.navigateTo({
+			url: `/component/chatPage/chat/chat?uid=${item.data.room_id}&leader=${item.data.leader}`
+		})
+	}
 }
 
 // 私聊：弹窗输入对方账号
@@ -91,208 +115,226 @@ const goFriendList = () => {
   padding: calc(var(--status-bar-height) + 24rpx) 24rpx calc(40rpx + env(safe-area-inset-bottom));
   background: #f5f6f8;
 
-  /* ---------- 右上角工具区 ---------- */
-  .user-tool {
-    position: fixed;
-    top: calc(var(--status-bar-height) + 24rpx);
-    left: 24rpx;
-    z-index: 999;
+  /* ---------- 顶部品牌横幅 ---------- */
+  .chat-header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20rpx;
+    padding: 40rpx 36rpx;
+    border-radius: 28rpx;
+    background: linear-gradient(135deg, #4a7dff 0%, #7aa8ff 100%);
+    box-shadow: 0 12rpx 32rpx rgba(74, 125, 255, 0.28);
 
-    /* 触发按钮：必须高于遮罩，否则打开后点不到 */
+    .header-right {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+
+      .chat-header-title {
+        font-size: 44rpx;
+        font-weight: 700;
+        color: #ffffff;
+        letter-spacing: 2rpx;
+      }
+
+      .chat-header-sub {
+        margin-top: 12rpx;
+        font-size: 24rpx;
+        color: rgba(255, 255, 255, 0.85);
+      }
+    }
+
+    /* 右上角“+”按钮 */
     .switch-tools-sign {
-      position: relative;
-      z-index: 3;
-      width: 76rpx;
-      height: 76rpx;
+      width: 72rpx;
+      height: 72rpx;
       border-radius: 50%;
-      background: #ffffff;
-      box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.12);
+      background: rgba(255, 255, 255, 0.94);
+      box-shadow: 0 4rpx 14rpx rgba(0, 0, 0, 0.15);
       display: flex;
       align-items: center;
       justify-content: center;
       transition: transform 0.2s ease;
+      flex-shrink: 0;
 
       &:active {
         transform: scale(0.92);
       }
 
       image {
-        width: 40rpx;
-        height: 40rpx;
+        width: 36rpx;
+        height: 36rpx;
         transition: transform 0.25s ease;
       }
 
       /* 展开时图标旋转 45°，做“+”→“×”的过渡 */
       &.is-open {
-        background: #3b7cff;
+        background: #ffffff;
         image {
           transform: rotate(45deg);
         }
       }
     }
-
-    /* ---------- 全屏遮罩 ---------- */
-    .shade-index {
-      position: fixed;
-      top: 0;
-      right: 0;
-      bottom: 0;
-      left: 0;
-      z-index: 2;
-      background: rgba(226, 226, 226, 0.4);
-      /* 小程序端遮罩不响应滚动穿透，H5 可用 backdrop-filter */
-      backdrop-filter: blur(2rpx);
-      animation: shade-in 0.18s ease-out;
-
-      /* ---------- 下拉菜单 ---------- */
-      .tool-list {
-        position: absolute;
-        top: 112rpx;
-        left: 24rpx;
-        width: 248rpx;
-        padding: 8rpx 0;
-        background: #ffffff;
-        border-radius: 18rpx;
-        box-shadow: 0 12rpx 36rpx rgba(0, 0, 0, 0.18);
-        transform-origin: top right;
-        animation: menu-in 0.18s ease-out;
-
-        /* 顶部小三角 */
-        &::before {
-          content: '';
-          position: absolute;
-          top: -12rpx;
-          right: 26rpx;
-          width: 0;
-          height: 0;
-          border-left: 12rpx solid transparent;
-          border-right: 12rpx solid transparent;
-          border-bottom: 14rpx solid #ffffff;
-        }
-
-        .tool-build-connect,
-        .tool-build-group,
-        .friend-manage {
-          position: relative;
-          padding: 24rpx 24rpx 24rpx 76rpx;
-          font-size: 28rpx;
-          color: #333333;
-          line-height: 1.2;
-
-          &:active {
-            background: #f2f3f5;
-          }
-
-          /* 左侧圆形图标底色 */
-          &::before {
-            content: '';
-            position: absolute;
-            left: 24rpx;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 36rpx;
-            height: 36rpx;
-            border-radius: 50%;
-          }
-
-          /* 图标字符 */
-          &::after {
-            position: absolute;
-            left: 24rpx;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 36rpx;
-            text-align: center;
-            font-size: 22rpx;
-            font-weight: bold;
-            color: #ffffff;
-          }
-        }
-
-        .tool-build-connect {
-          &::before { background: #3b7cff; }
-          &::after  { content: '+'; }
-        }
-
-        .tool-build-group {
-          &::before { background: #22b573; }
-          &::after  { content: '群'; font-size: 20rpx; }
-        }
-
-        .friend-manage {
-          margin-top: 6rpx;
-          border-top: 1rpx solid #f0f0f0;
-          &::before { background: #ff9f2e; }
-          &::after  { content: '管'; font-size: 20rpx; }
-        }
-      }
-    }
   }
 
-  /* ---------- 列表区 ---------- */
+  /* ---------- 会话列表 ---------- */
   .notice-container {
-    padding-top: 112rpx;
+    padding-top: 8rpx;
 
     .notice-list {
       margin-bottom: 20rpx;
       background: #ffffff;
-      border-radius: 18rpx;
+      border-radius: 20rpx;
       box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
       overflow: hidden;
-
-      &:active {
-        background: #fafafa;
-      }
     }
 
-    /* 新消息通知 */
-    .notice-item {
-      position: relative;
-      padding: 30rpx 72rpx 30rpx 40rpx;
-      font-size: 30rpx;
-      font-weight: 500;
-      color: #222222;
-
-      &::before {
-        content: '';
-        position: absolute;
-        left: 0;
-        top: 0;
-        bottom: 0;
-        width: 8rpx;
-        background: #ff7a45;
-      }
-
-      &::after {
-        content: '';
-        position: absolute;
-        right: 32rpx;
-        top: 50%;
-        transform: translateY(-50%);
-        width: 16rpx;
-        height: 16rpx;
-        border-radius: 50%;
-        background: #fa5151;
-      }
-    }
-
-    /* 普通会话 */
     .chat-item {
-      position: relative;
-      padding: 30rpx 72rpx 30rpx 40rpx;
-      font-size: 30rpx;
-      color: #666666;
+      display: flex;
+      align-items: center;
+      padding: 28rpx;
+      transition: background 0.15s ease;
 
+      /* 会话头像 */
+      .chat-avatar {
+        width: 84rpx;
+        height: 84rpx;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #ffffff;
+        font-size: 32rpx;
+        font-weight: 600;
+        margin-right: 24rpx;
+        flex-shrink: 0;
+
+        &.avatar-message {
+          background: linear-gradient(135deg, #4a7dff, #7aa8ff);
+        }
+
+        &.avatar-group {
+          background: linear-gradient(135deg, #22b573, #5ad095);
+        }
+      }
+
+      /* 会话名称 */
+      .chat-name {
+        flex: 1;
+        min-width: 0;
+        font-size: 30rpx;
+        color: #333333;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+      }
+
+      /* 右侧箭头 */
       &::after {
         content: '';
-        position: absolute;
-        right: 32rpx;
-        top: 50%;
         width: 14rpx;
         height: 14rpx;
         border-top: 3rpx solid #c8c9cc;
         border-right: 3rpx solid #c8c9cc;
-        transform: translateY(-50%) rotate(45deg);
+        transform: rotate(45deg);
+        margin-left: 12rpx;
+        flex-shrink: 0;
+      }
+    }
+  }
+
+  /* ---------- 全屏遮罩 + 下拉菜单 ---------- */
+  .shade-index {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 999;
+    background: rgba(226, 226, 226, 0.4);
+    animation: shade-in 0.18s ease-out;
+
+    .tool-list {
+      position: absolute;
+      top: calc(var(--status-bar-height) + 144rpx);
+      left: 60rpx;
+      width: 248rpx;
+      padding: 8rpx 0;
+      background: #ffffff;
+      border-radius: 18rpx;
+      box-shadow: 0 12rpx 36rpx rgba(0, 0, 0, 0.18);
+      transform-origin: top left;
+      animation: menu-in 0.18s ease-out;
+
+      /* 顶部小三角 */
+      &::before {
+        content: '';
+        position: absolute;
+        top: -12rpx;
+        left: 36rpx;
+        width: 0;
+        height: 0;
+        border-left: 12rpx solid transparent;
+        border-right: 12rpx solid transparent;
+        border-bottom: 14rpx solid #ffffff;
+      }
+
+      .tool-build-connect,
+      .tool-build-group,
+      .friend-manage {
+        position: relative;
+        padding: 24rpx 24rpx 24rpx 76rpx;
+        font-size: 28rpx;
+        color: #333333;
+        line-height: 1.2;
+
+        &:active {
+          background: #f2f3f5;
+        }
+
+        /* 左侧圆形图标底色 */
+        &::before {
+          content: '';
+          position: absolute;
+          left: 24rpx;
+          top: 50%;
+          transform: translateY(-50%);
+          width: 36rpx;
+          height: 36rpx;
+          border-radius: 50%;
+        }
+
+        /* 图标字符 */
+        &::after {
+          position: absolute;
+          left: 24rpx;
+          top: 50%;
+          transform: translateY(-50%);
+          width: 36rpx;
+          text-align: center;
+          font-size: 22rpx;
+          font-weight: bold;
+          color: #ffffff;
+        }
+      }
+
+      .tool-build-connect {
+        &::before { background: #3b7cff; }
+        &::after  { content: '+'; }
+      }
+
+      .tool-build-group {
+        &::before { background: #22b573; }
+        &::after  { content: '群'; font-size: 20rpx; }
+      }
+
+      .friend-manage {
+        margin-top: 6rpx;
+        border-top: 1rpx solid #f0f0f0;
+        &::before { background: #ff9f2e; }
+        &::after  { content: '管'; font-size: 20rpx; }
       }
     }
   }
@@ -312,5 +354,12 @@ const goFriendList = () => {
     opacity: 1;
     transform: scale(1) translateY(0);
   }
+}
+</style>
+
+<!-- 全局按压反馈：hover-class 在微信端需全局样式才生效 -->
+<style lang="scss">
+.chat-item-hover {
+  background: #f7f8fa;
 }
 </style>

@@ -61,6 +61,7 @@
 <script setup>
 import {ref} from 'vue'
 import {SubmitMyQuestion} from '@/util/tools/medical.js'
+import { onPullDownRefresh } from '@dcloudio/uni-app'
 const ImageOp = ref(false)
 const loading = ref(false)   // 是否正在诊断
 
@@ -172,7 +173,8 @@ const sendQuestion = async ()=>{
 			scrollToBottom()              // ← AI 回复后滚到底
 		} catch (err) {
 			console.log('发送失败:', err)
-			chatList.value.push({ role: 'ai', content: '发送失败，请重试' })
+			const msg = (err && err.message) ? err.message : '发送失败，请重试'
+			chatList.value.push({ role: 'ai', content: '发送失败：' + msg })
 			scrollToBottom()
 		} finally {
 			loading.value = false
@@ -180,6 +182,11 @@ const sendQuestion = async ()=>{
 		}
 
 }
+
+// 下拉刷新：聊天页无可刷数据，直接结束刷新动画
+onPullDownRefresh(() => {
+	uni.stopPullDownRefresh()
+})
 
 
 
@@ -270,7 +277,9 @@ const sendQuestion = async ()=>{
 	position: fixed;
 	bottom: 0;
 	z-index: 50;             /* ← 高于遮罩，输入区不被遮罩挡住 */
-	background-color: aliceblue;
+	background-color: #ffffff;
+	border-top: 1rpx solid #ebedf0;
+	box-shadow: 0 -6rpx 24rpx rgba(0, 0, 0, 0.04);
 }
 
 
@@ -321,10 +330,11 @@ const sendQuestion = async ()=>{
 .chat-input input{
 	width: 100%;
 	height: 100%;
-	background-color: white;
-	border-radius: 25rpx;
-	padding: 0 20rpx;
+	background-color: #f4f6f9;
+	border-radius: 999rpx;
+	padding: 0 24rpx;
 	box-sizing: border-box;
+	font-size: 28rpx;
 }
 
 .image-operator-btn{
@@ -349,7 +359,13 @@ const sendQuestion = async ()=>{
 .submit-medical-data button{
 	width: 100%;
 	height: 100%;
-	background-color: greenyellow;
+	background: linear-gradient(135deg, #4a7dff, #6ea3ff);
+	color: #ffffff;
+	font-size: 28rpx;
+	border-radius: 999rpx;
+}
+.submit-medical-data button::after{
+	border: none;
 }
 
 .image-select-op{

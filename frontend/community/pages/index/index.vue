@@ -3,6 +3,7 @@
 		<view class="content">
 
 			<view class="app-title">智慧社区 AI 服务平台</view>
+			<view class="app-subtitle">连接邻里 · 服务生活</view>
 
 			<view class="status_card">
 				<!-- 切换 -->
@@ -16,7 +17,7 @@
 					<input type="text" placeholder="请输入您的账号" v-model="L_account"/>
 					<input type="password" placeholder="请输入您的密码" v-model="L_password"/>
 					<button @click="LoginSkipHome">登录</button>
-					<text class="switch-tip" @click="switchCardStatus">没有账号？点我申请或者激活···</text>
+					<text class="switch-tip" @click="switchCardStatus">没有账号？点我注册···</text>
 				</view>
 
 				<!-- 注册 -->
@@ -44,6 +45,7 @@
 	import { checkJwtTimer } from '@/util/request'
 	import { request } from '@/util/request.js'
 	import { uploadOneImage } from '@/util/tools/share.js'
+	import { onPullDownRefresh } from '@dcloudio/uni-app'
 
 	if(uni.getStorageSync('jwtToken')){
 			console.log('检测到已有 <令牌>')
@@ -61,6 +63,19 @@
 	// 	// Temp code
 	// 	GoHome()
 	// }
+
+	// 下拉刷新：重新校验登录态，Token 有效则直接进入首页
+	onPullDownRefresh(async () => {
+		if (uni.getStorageSync('jwtToken')) {
+			const Error = await checkJwtTimer()
+			if (!Error) {
+				uni.stopPullDownRefresh()
+				GoHome()
+				return
+			}
+		}
+		uni.stopPullDownRefresh()
+	})
 
 	const card_status = ref(true)
 	const switchCardStatus = ()=>{
@@ -211,7 +226,7 @@
 
 	.container{
 		min-height: 100vh;
-		background: #f5f6f8;
+		background: linear-gradient(180deg, #edf2ff 0%, #f5f6f8 60%, #f5f6f8 100%);
 		box-sizing: border-box;
 	}
 
@@ -227,20 +242,32 @@
 	/* ===== 标题 ===== */
 	.app-title{
 		margin-top: 120rpx;
-		margin-bottom: 60rpx;
-		font-size: 40rpx;
-		font-weight: 600;
+		margin-bottom: 12rpx;
+		font-size: 44rpx;
+		font-weight: 700;
 		color: #1f2329;
 		letter-spacing: 2rpx;
+		background: linear-gradient(135deg, #4a7dff, #7aa8ff);
+		-webkit-background-clip: text;
+		background-clip: text;
+		-webkit-text-fill-color: transparent;
+	}
+
+	.app-subtitle{
+		margin-bottom: 60rpx;
+		font-size: 24rpx;
+		color: #8a94a6;
+		letter-spacing: 4rpx;
 	}
 
 	/* ===== 卡片 ===== */
 	.status_card{
 		width: 100%;
 		background: #ffffff;
-		border-radius: 16rpx;
-		padding: 40rpx 40rpx 32rpx;
+		border-radius: 24rpx;
+		padding: 44rpx 40rpx 36rpx;
 		box-sizing: border-box;
+		box-shadow: 0 16rpx 48rpx rgba(74, 125, 255, 0.12);
 	}
 
 	/* ===== 切换 tabs（朴素下划线式） ===== */
@@ -301,16 +328,17 @@
 		line-height: 88rpx;
 		margin: 8rpx 0 0;
 		padding: 0;
-		background: #3a7afe;
+		background: linear-gradient(135deg, #4a7dff, #6ea3ff);
 		color: #ffffff;
 		font-size: 30rpx;
 		border-radius: 12rpx;
+		box-shadow: 0 8rpx 20rpx rgba(74, 125, 255, 0.3);
 	}
 	.login_card button::after,
 	.register_card button::after{ border: none; }
 	.login_card button:active,
 	.register_card button:active{
-		background: #2f6bff;
+		background: linear-gradient(135deg, #2f6bff, #4a7dff);
 	}
 
 	/* ===== 切换提示 ===== */

@@ -1,6 +1,9 @@
 <template>
-	<view>
-		<view class="title">设置</view>
+	<view class="setting-page">
+		<view class="page-header">
+			<text class="page-header-title">设置</text>
+			<text class="page-header-sub">账号与社区管理</text>
+		</view>
 		<view class="set-container">
 			<view class="account-setting" @click="GoToAccountPage">
 				<view class="title">
@@ -87,7 +90,7 @@
 
 <script setup>
 import { ref } from 'vue';
-import { onShow } from '@dcloudio/uni-app';
+import { onShow, onPullDownRefresh } from '@dcloudio/uni-app';
 import { BASEURL_NAME } from '@/util/configuration.js';
 import {request} from '@/util/request.js'
 
@@ -321,6 +324,15 @@ onShow(() => {
 	UploadUserAvatar()
 })
 
+// 下拉刷新：刷新社区状态、昵称与头像
+onPullDownRefresh(() => {
+	loading.value = true
+	CheckCommunityStatus()
+	UploadUserNickname()
+	UploadUserAvatar()
+	uni.stopPullDownRefresh()
+})
+
 
 </script>
 
@@ -335,15 +347,27 @@ page {
 	padding-bottom: calc(40rpx + env(safe-area-inset-bottom));
 
 	/* ============ 页面标题 ============ */
-	> .title {
-		height: 100rpx;
-		line-height: 100rpx;
-		text-align: center;
-		font-size: 36rpx;
-		font-weight: 600;
-		color: #1d2129;
-		background: #ffffff;
-		border-bottom: 1rpx solid #f0f1f3;
+	.page-header {
+		margin: 24rpx 24rpx 4rpx;
+		padding: 44rpx 36rpx;
+		border-radius: 28rpx;
+		background: linear-gradient(135deg, #4a7dff 0%, #7aa8ff 100%);
+		box-shadow: 0 12rpx 32rpx rgba(74, 125, 255, 0.28);
+		display: flex;
+		flex-direction: column;
+
+		.page-header-title {
+			font-size: 44rpx;
+			font-weight: 700;
+			color: #ffffff;
+			letter-spacing: 2rpx;
+		}
+
+		.page-header-sub {
+			margin-top: 12rpx;
+			font-size: 24rpx;
+			color: rgba(255, 255, 255, 0.85);
+		}
 	}
 }
 
@@ -387,6 +411,7 @@ page {
 			overflow: hidden;
 			background: #f2f3f5;
 			border: 2rpx solid #e5e6eb;
+			box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.08);
 			flex-shrink: 0;
 
 			image {

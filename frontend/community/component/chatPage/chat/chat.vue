@@ -134,6 +134,14 @@ export default{
 		// 2. 建立 WebSocket 实时连接
 		connectChatSocket(this.roomUid, this.myAccount)
 	},
+	// 下拉刷新：重新拉取历史消息
+	onPullDownRefresh(){
+		UploadHistoryMessage(this.roomUid).then(() => {
+			uni.stopPullDownRefresh()
+		}).catch(() => {
+			uni.stopPullDownRefresh()
+		})
+	},
 	onUnload(){
 		// 离开页面时关闭连接
 		closeChatSocket()
@@ -190,12 +198,12 @@ export default{
 		padding: 18rpx 24rpx;
 		font-size: 30rpx;
 		line-height: 1.55;
-		color: #1a1a1a;
-		background: #95ec69;
-		border-radius: 12rpx;
+		color: #ffffff;
+		background: linear-gradient(135deg, #4a7dff, #6ea3ff);
+		border-radius: 16rpx;
 		word-break: break-word;
 		white-space: pre-wrap;
-		box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.04);
+		box-shadow: 0 6rpx 16rpx rgba(74, 125, 255, 0.22);
 
 		/* 小尖角 */
 		&::after {
@@ -205,7 +213,7 @@ export default{
 			right: -14rpx;
 			border-width: 10rpx 0 10rpx 16rpx;
 			border-style: solid;
-			border-color: transparent transparent transparent #95ec69;
+			border-color: transparent transparent transparent #5d92ff;
 		}
 	}
 
@@ -334,11 +342,12 @@ export default{
 			line-height: 72rpx;
 			font-size: 28rpx;
 			color: #ffffff;
-			background: #07c160;
+			background: linear-gradient(135deg, #4a7dff, #6ea3ff);
 			border-radius: 36rpx;
+			box-shadow: 0 6rpx 16rpx rgba(74, 125, 255, 0.28);
 
 			&:active {
-				background: #06ad56;
+				opacity: 0.85;
 			}
 		}
 	}

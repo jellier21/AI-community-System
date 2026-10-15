@@ -91,7 +91,7 @@
 
 <script setup>
 	import { ref } from 'vue';
-	import { onLoad } from '@dcloudio/uni-app';
+	import { onLoad, onPullDownRefresh } from '@dcloudio/uni-app';
 	import { request } from '@/util/request.js';
 	import { uploadOneImage } from '@/util/tools/share.js';
 
@@ -186,7 +186,8 @@
 							avatar.value = avatarUrl
 						}catch(e){
 							uni.hideLoading()
-							uni.showToast({ title: '上传失败', icon: 'none' })
+							const msg = (e && e.message) ? String(e.message) : '上传失败'
+							uni.showToast({ title: msg.length > 18 ? msg.slice(0, 18) : msg, icon: 'none' })
 						}
 					}
 				})
@@ -202,6 +203,14 @@
 		fetchNickname()
 		fetchAvatar()
 		fetchProfile()
+	})
+
+	// 下拉刷新：重新拉取昵称、头像与签名
+	onPullDownRefresh(async () => {
+		await fetchNickname()
+		await fetchAvatar()
+		await fetchProfile()
+		uni.stopPullDownRefresh()
 	})
 
 
@@ -348,17 +357,33 @@
 
 	/* ---------- 顶部资料区 ---------- */
 	.profile {
+		position: relative;
 		display: flex;
 		flex-direction: column;
 		align-items: center;
 		padding: 100rpx 40rpx 80rpx;
 		background: #fff;
+		overflow: hidden;
+
+		/* 顶部渐变装饰 */
+		&::before {
+			content: '';
+			position: absolute;
+			left: 0;
+			right: 0;
+			top: 0;
+			height: 220rpx;
+			background: linear-gradient(135deg, #4a7dff, #7aa8ff);
+		}
 
 		.avatar {
+			position: relative;
 			width: 140rpx;
 			height: 140rpx;
 			border-radius: 50%;
 			overflow: hidden;
+			border: 6rpx solid #ffffff;
+			box-shadow: 0 8rpx 20rpx rgba(74, 125, 255, 0.25);
 			margin-bottom: 28rpx;
 
 			image {
@@ -368,6 +393,7 @@
 		}
 
 		.nickname {
+			position: relative;
 			font-size: 40rpx;
 			font-weight: 600;
 			color: #1a1a1a;
@@ -375,12 +401,14 @@
 		}
 
 		.account {
+			position: relative;
 			font-size: 24rpx;
 			color: #9a9fa8;
 			margin-bottom: 16rpx;
 		}
 
 		.signature {
+			position: relative;
 			font-size: 26rpx;
 			color: #6b7280;
 			max-width: 80%;
@@ -391,8 +419,11 @@
 
 	/* ---------- 设置列表 ---------- */
 	.cell-group {
-		margin-top: 24rpx;
+		margin: 24rpx;
 		background: #fff;
+		border-radius: 24rpx;
+		overflow: hidden;
+		box-shadow: 0 8rpx 24rpx rgba(29, 33, 41, 0.05);
 
 		.cell {
 			display: flex;
@@ -462,6 +493,7 @@
 		border-radius: 24rpx;
 		padding: 48rpx 40rpx 40rpx;
 		box-sizing: border-box;
+		box-shadow: 0 16rpx 48rpx rgba(29, 33, 41, 0.12);
 
 		.dialog-title {
 			font-size: 32rpx;
@@ -511,7 +543,7 @@
 			}
 
 			.btn-confirm {
-				background: #07c160;
+				background: linear-gradient(135deg, #4a7dff, #6ea3ff);
 				color: #fff;
 			}
 		}

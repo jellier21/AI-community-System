@@ -21,9 +21,15 @@
 <script setup>
 import {ref} from 'vue'
 import {request} from '@/util/request.js'
+import { onPullDownRefresh } from '@dcloudio/uni-app'
 
 const loading = ref(false)
 const report = ref('')
+
+// 下拉刷新：周报需手动生成，直接结束刷新动画
+onPullDownRefresh(() => {
+	uni.stopPullDownRefresh()
+})
 
 const generate = async ()=>{
 	if (loading.value) return
@@ -96,9 +102,9 @@ const markdownToHtml = (content = '')=>{
 	padding: 0;
 	font-size: 30rpx;
 	color: #fff;
-	background: linear-gradient(135deg, #4b8cff, #2f6bff);
-	border-radius: 20rpx;
-	box-shadow: 0 8rpx 20rpx rgba(47, 107, 255, 0.3);
+	background: linear-gradient(135deg, #4a7dff, #6ea3ff);
+	border-radius: 999rpx;
+	box-shadow: 0 8rpx 20rpx rgba(74, 125, 255, 0.3);
 	&::after{ border: none; }
 	&:active{ opacity: 0.85; }
 	&[disabled]{
@@ -112,6 +118,7 @@ const markdownToHtml = (content = '')=>{
 	background: #fff;
 	border-radius: 24rpx;
 	padding: 28rpx;
+	box-shadow: 0 8rpx 24rpx rgba(29, 33, 41, 0.05);
 	font-size: 28rpx;
 	line-height: 1.8;
 	color: #333;

@@ -32,8 +32,8 @@
 						{{item.account}}
 					</view>
 					<view class="member-Is">
-						<text v-if="item.join_is">已加入</text>
-						<text v-else>未加入</text>
+						<text v-if="item.join_is" class="joined">已加入</text>
+						<text v-else class="not-joined">未加入</text>
 					</view>
 					<view class="groupDel-Content" v-if="group_manager" @click="toggleSelect(item.account)">
 						<image v-if="!selectedAccounts.includes(item.account)"
@@ -63,7 +63,7 @@
 
 <script setup>
 import {ref} from 'vue'
-import {onShow} from '@dcloudio/uni-app'
+import {onShow, onPullDownRefresh} from '@dcloudio/uni-app'
 import { _memberList_,GetCommunityUid,GetMemberList,RemoveMembers,AddMember } from '@/util/tools/member'
 
 
@@ -151,6 +151,13 @@ const confirmAddMember = async ()=>{
 onShow(async()=>{
 	community_Number.value = await GetCommunityUid()
 	await GetMemberList(community_Number.value)
+})
+
+// 下拉刷新：刷新社区号与成员列表
+onPullDownRefresh(async () => {
+	community_Number.value = await GetCommunityUid()
+	await GetMemberList(community_Number.value)
+	uni.stopPullDownRefresh()
 })
 </script>
 
@@ -322,8 +329,18 @@ page {
 			text {
 				display: inline-block;
 				padding: 6rpx 16rpx;
-				border-radius: 8rpx;
+				border-radius: 999rpx;
 				font-size: 22rpx;
+			}
+
+			.joined {
+				background: rgba(34, 181, 115, 0.1);
+				color: #22b573;
+			}
+
+			.not-joined {
+				background: rgba(153, 153, 153, 0.12);
+				color: #999999;
 			}
 		}
 
@@ -357,8 +374,9 @@ page {
 .dialog-content {
 	width: 600rpx;
 	background: #fff;
-	border-radius: 20rpx;
+	border-radius: 24rpx;
 	padding: 40rpx;
+	box-shadow: 0 16rpx 48rpx rgba(29, 33, 41, 0.12);
 }
 .dialog-title {
 	font-size: 32rpx;
@@ -368,10 +386,11 @@ page {
 	margin-bottom: 30rpx;
 }
 .dialog-input {
-	border: 1rpx solid #ddd;
-	border-radius: 12rpx;
+	border: 2rpx solid #e8eaed;
+	border-radius: 16rpx;
 	padding: 20rpx;
 	font-size: 28rpx;
+	background: #fafbfc;
 	margin-bottom: 24rpx;
 }
 .dialog-btns {

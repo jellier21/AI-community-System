@@ -13,7 +13,7 @@
 
 <script setup>
 import { ref } from 'vue'
-import { onLoad } from '@dcloudio/uni-app'
+import { onLoad, onPullDownRefresh } from '@dcloudio/uni-app'
 import { request } from '@/util/request.js'
 
 const account = ref('')
@@ -28,6 +28,14 @@ onLoad((option) => {
 	if (account.value) {
 		loadProfile()
 	}
+})
+
+// 下拉刷新：重新拉取对方资料
+onPullDownRefresh(async () => {
+	if (account.value) {
+		await loadProfile()
+	}
+	uni.stopPullDownRefresh()
 })
 
 const loadProfile = async () => {
@@ -62,26 +70,47 @@ page {
 	min-height: 100vh;
 }
 .profile-card {
+	position: relative;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	padding: 100rpx 40rpx 60rpx;
+	margin: 24rpx;
+	padding: 80rpx 40rpx 60rpx;
 	background: #fff;
+	border-radius: 28rpx;
+	box-shadow: 0 8rpx 24rpx rgba(29, 33, 41, 0.06);
+	overflow: hidden;
+
+	/* 顶部渐变装饰 */
+	&::before {
+		content: '';
+		position: absolute;
+		left: 0;
+		right: 0;
+		top: 0;
+		height: 200rpx;
+		background: linear-gradient(135deg, #4a7dff, #7aa8ff);
+	}
 
 	.avatar {
+		position: relative;
 		width: 160rpx;
 		height: 160rpx;
 		border-radius: 50%;
 		background: #f0f0f0;
+		border: 6rpx solid #ffffff;
+		box-shadow: 0 8rpx 20rpx rgba(74, 125, 255, 0.25);
 		margin-bottom: 28rpx;
 	}
 	.nickname {
+		position: relative;
 		font-size: 40rpx;
 		font-weight: 600;
 		color: #1a1a1a;
 		margin-bottom: 12rpx;
 	}
 	.account {
+		position: relative;
 		font-size: 26rpx;
 		color: #9a9fa8;
 		margin-bottom: 24rpx;
@@ -93,6 +122,7 @@ page {
 	}
 
 	.signature {
+		position: relative;
 		font-size: 28rpx;
 		color: #6b7280;
 		max-width: 80%;

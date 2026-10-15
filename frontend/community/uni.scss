@@ -74,3 +74,25 @@ $uni-color-subtitle: #555555; // 二级标题颜色
 $uni-font-size-subtitle:26px;
 $uni-color-paragraph: #3F536E; // 文章段落颜色
 $uni-font-size-paragraph:15px;
+
+/* ========== 项目自定义设计变量（社区管理系统） ========== */
+/* 品牌主色 */
+$cms-primary: #4a7dff;
+$cms-primary-deep: #2f6bff;
+$cms-primary-light: #7aa8ff;
+$cms-gradient-primary: linear-gradient(135deg, #4a7dff 0%, #7aa8ff 100%);
+$cms-gradient-hero: linear-gradient(135deg, #4a7dff 0%, #6ea3ff 100%);
+
+/* 背景与文字 */
+$cms-bg: #f4f6f9;
+$cms-text-main: #1d2129;
+$cms-text-sub: #86909c;
+$cms-text-light: #c9cdd4;
+
+/* 圆角与阴影 */
+$cms-radius-lg: 28rpx;
+$cms-radius-md: 20rpx;
+$cms-radius-sm: 12rpx;
+$cms-shadow-card: 0 8rpx 24rpx rgba(29, 33, 41, 0.06);
+$cms-shadow-primary: 0 8rpx 20rpx rgba(74, 125, 255, 0.28);
+$cms-shadow-hero: 0 12rpx 32rpx rgba(74, 125, 255, 0.28);

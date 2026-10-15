@@ -1,5 +1,5 @@
-const BASEURL_NAME = "http://127.0.0.1:8080"
-const WS_BASEURL_NAME = "ws://127.0.0.1:8080"
+const BASEURL_NAME = "https://community.eatgloud.top"
+const WS_BASEURL_NAME = "wss://community.eatgloud.top"
 
 
 export {

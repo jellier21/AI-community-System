@@ -1,8 +1,5 @@
 <template>
 	<view class="page">
-		<view class="header">
-			<text class="title">好友管理</text>
-		</view>
 		<view class="list">
 			<view class="friend-item" v-for="f in list" :key="f.room_uid">
 				<image class="avatar" :src="f.friend_avatar || '/static/logo.png'" mode="aspectFill"
@@ -22,7 +19,7 @@
 
 <script setup>
 import { ref } from 'vue'
-import { onShow } from '@dcloudio/uni-app'
+import { onShow, onPullDownRefresh } from '@dcloudio/uni-app'
 import { getFriendList, deleteFriend } from '@/util/chat/group'
 
 const list = ref([])
@@ -32,6 +29,12 @@ const loadList = async () => {
 }
 
 onShow(loadList)
+
+// 下拉刷新：刷新好友列表
+onPullDownRefresh(async () => {
+	await loadList()
+	uni.stopPullDownRefresh()
+})
 
 const goChat = (f) => {
 	uni.navigateTo({
@@ -64,22 +67,26 @@ page { background: #f5f6f8; }
 	background: #fff; padding: 20rpx 32rpx;
 	text-align: center; font-size: 34rpx; font-weight: 600;
 }
-.list { padding: 20rpx; }
+.list { padding: 20rpx 24rpx; }
 .friend-item {
 	display: flex; align-items: center;
-	background: #fff; border-radius: 16rpx;
+	background: #fff; border-radius: 20rpx;
 	padding: 20rpx 24rpx; margin-bottom: 16rpx;
+	box-shadow: 0 8rpx 24rpx rgba(29,33,41,0.05);
 }
 .avatar {
 	width: 80rpx; height: 80rpx; border-radius: 50%;
 	margin-right: 20rpx; background: #f0f0f0;
+	border: 2rpx solid #e8eefc;
 }
 .info { flex: 1; }
 .nick { display: block; font-size: 30rpx; font-weight: 600; color: #222; }
 .account { display: block; font-size: 24rpx; color: #999; margin-top: 6rpx; }
 .del-btn {
 	font-size: 26rpx; color: #f53f3f;
-	padding: 10rpx 20rpx;
+	padding: 10rpx 24rpx;
+	border-radius: 999rpx;
+	background: #fff1f0;
 }
 .empty {
 	text-align: center; color: #999; padding: 120rpx 0; font-size: 26rpx;
