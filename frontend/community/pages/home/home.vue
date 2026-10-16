@@ -6,7 +6,7 @@
 					{{ domain }}
 				</view>
 				<view class="community-greet">
-					<text>欢迎使用 智慧社区 AI 服务平台</text>
+					<text>欢迎使用 邻友小圈</text>
 				</view>
 			</view>
 			<view class="header-image">

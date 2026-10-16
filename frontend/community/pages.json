@@ -3,7 +3,7 @@
 		{
 			"path": "pages/index/index",
 			"style": {
-				"navigationBarTitleText": "智慧社区 AI 服务平台",
+				"navigationBarTitleText": "邻友小圈",
 				"enablePullDownRefresh": true
 			}
 		},

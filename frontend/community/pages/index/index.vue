@@ -2,7 +2,7 @@
 	<view class="container">
 		<view class="content">
 
-			<view class="app-title">智慧社区 AI 服务平台</view>
+			<view class="app-title">邻友小圈</view>
 			<view class="app-subtitle">连接邻里 · 服务生活</view>
 
 			<view class="status_card">
